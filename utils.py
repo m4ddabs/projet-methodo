@@ -3,6 +3,7 @@ from tslearn.datasets import UCR_UEA_datasets
 import keras_core as keras
 from sklearn.preprocessing import MinMaxScaler
 from keras.utils import to_categorical
+import numpy as np
 
 def prepare_data(dataset_name, architecture_type):
     data_loader = UCR_UEA_datasets()
