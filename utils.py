@@ -6,6 +6,7 @@ from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 import os
+import json
 
 def prepare_data(dataset_name, architecture_type):
     data_loader = UCR_UEA_datasets()
@@ -38,25 +39,26 @@ def prepare_data(dataset_name, architecture_type):
     return x_train, y_train, x_test, y_test
 
 
-def test_models(model_list, dataset_name, architecture_type):
+def test_models(model_list, dataset_name):
     results_path = os.path.join("resultats", dataset_name)
-    os.makedirs(results_path)
-    x_train, y_train, x_test, y_test = prepare_data(dataset_name, architecture_type)
+    os.makedirs(results_path, exist_ok=True)
     results = []
     
 
     for i in range(len(model_list)):
-        model = model_list[i]
-        checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}")
+        model, architecture_type = model_list[i]
+        x_train, y_train, x_test, y_test = prepare_data(dataset_name, architecture_type)
+        checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}.hdf5")
         model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_filepath,
         save_weights=True,
         monitor='val_loss',
         mode='min',
         save_best_only=True)
-
         print(f"model {i+1}")
         model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
-        model.fit(x=x_train, y=y_train, epochs=20, batch_size=10, validation_data=(x_test, y_test), callbacks=[model_checkpoint_callback])
+        history = model.fit(x=x_train, y=y_train, epochs=20, batch_size=10, validation_data=(x_test, y_test), callbacks=[model_checkpoint_callback])
+        with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
+            json.dump(history.history, json_file)
         results.append(model)
     return results
