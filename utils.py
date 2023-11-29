@@ -14,8 +14,9 @@ def prepare_data(dataset_name, architecture_type):
     # Pour les deux architecture RNN et CNN , on doit avoir une dataset de type (n,T,c)
     # Si l'architecture est RNN
     if architecture_type == 'rnn':
-        x_train = x_train.reshape((x_train.shape[0], -1, 1))
-        x_test = x_test.reshape((x_test.shape[0], -1, 1))
+        # x_train = x_train.reshape((x_train.shape[0], -1, 1))
+        # x_test = x_test.reshape((x_test.shape[0], -1, 1))
+        print("rnn")
 
     # Si l'architecture est CNN
     elif architecture_type == 'cnn':
@@ -34,12 +35,14 @@ def prepare_data(dataset_name, architecture_type):
     x_test = scaler.transform(x_test.reshape(-1, 1)).reshape(x_test.shape)
 
     num_classes = len(np.unique(y_train))
+    y_train = y_train.astype(int)
+    y_test = y_test.astype(int)
     y_train = to_categorical(y_train - 1, num_classes=num_classes)
     y_test = to_categorical(y_test - 1, num_classes=num_classes)
     return x_train, y_train, x_test, y_test
 
 
-def test_models(model_list, dataset_name):
+def test_models(model_list, dataset_name, epochs = 5):
     results_path = os.path.join("resultats", dataset_name)
     os.makedirs(results_path, exist_ok=True)
     results = []
@@ -60,5 +63,5 @@ def test_models(model_list, dataset_name):
         history = model.fit(x=x_train, y=y_train, epochs=20, batch_size=10, validation_data=(x_test, y_test), callbacks=[model_checkpoint_callback])
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
             json.dump(history.history, json_file)
-        results.append(model)
+        results.append((model, architecture_type))
     return results
