@@ -20,8 +20,8 @@ def prepare_data(dataset_name, architecture_type):
 
     # Si l'architecture est CNN
     elif architecture_type == 'cnn':
-        x_train = x_train.reshape((x_train.shape[0], -1, 1, 1))
-        x_test = x_test.reshape((x_test.shape[0], -1, 1, 1))
+        print("cnn")
+        
     # Pour l'architecture MLP, notre dataset doit etre sous la forme (n,T*c) avec un reshape de T c 
     # Si l'architecture est MLP
     elif architecture_type == 'mlp':
