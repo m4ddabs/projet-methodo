@@ -18,4 +18,5 @@
 * Faire en sorte que dans les visu on voit Train et Test séparément
 * Séparer xtrain et ytrain en un jeu de validation et garder xtest et ytest pour mesurer l'accuracy avec evaluate
 * Faire en sorte que dans le json des performances on garde les valeurs du evaluate aussi et pas juste history.
-*
+* Faire un script de synthèse des résultats, les mettre sous forme d'un tableau automatiquement
+* Script bash pour lancer plusieurs test simultanément.
