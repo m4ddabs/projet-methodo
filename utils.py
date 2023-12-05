@@ -2,11 +2,13 @@ import tslearn # pour les séries
 from tslearn.datasets import UCR_UEA_datasets
 import keras_core as keras
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
 from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint
 import numpy as np
 import os
 import json
+
 
 def prepare_data(dataset_name, architecture_type):
     data_loader = UCR_UEA_datasets()
@@ -33,24 +35,26 @@ def prepare_data(dataset_name, architecture_type):
     scaler.fit(x_train.reshape(-1, 1))  
     x_train = scaler.transform(x_train.reshape(-1, 1)).reshape(x_train.shape)
     x_test = scaler.transform(x_test.reshape(-1, 1)).reshape(x_test.shape)
-
+     
+   
+    label_encoder = LabelEncoder()
+    y_train = label_encoder.fit_transform(y_train)
+    y_test= label_encoder.transform(y_test)
+    
     num_classes = len(np.unique(y_train))
-    y_train = y_train.astype(int)
-    y_test = y_test.astype(int)
-    y_train = to_categorical(y_train - 1, num_classes=num_classes)
-    y_test = to_categorical(y_test - 1, num_classes=num_classes)
-    return x_train, y_train, x_test, y_test
-
+    y_train = to_categorical(y_train, num_classes=num_classes)
+    y_test = to_categorical(y_test, num_classes=num_classes)
+    
+    return x_train, y_train, x_test, y_test , label_encoder.classes_
 
 def test_models(model_list, dataset_name, epochs = 5):
     results_path = os.path.join("resultats", dataset_name)
     os.makedirs(results_path, exist_ok=True)
     results = []
     
-
     for i in range(len(model_list)):
         model, architecture_type = model_list[i]
-        x_train, y_train, x_test, y_test = prepare_data(dataset_name, architecture_type)
+        x_train, y_train, x_test, y_test , orginal_classes = prepare_data(dataset_name, architecture_type)
         checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}.hdf5")
         model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_filepath,
