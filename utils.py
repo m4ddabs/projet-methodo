@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import LabelEncoder
 from keras.utils import to_categorical
 from keras.callbacks import ModelCheckpoint
+from model_builder import build_model
 import numpy as np
 import os
 import json
@@ -54,7 +55,9 @@ def test_models(model_list, dataset_name, epochs = 5):
     
     for i in range(len(model_list)):
         model, architecture_type = model_list[i]
-        x_train, y_train, x_test, y_test , orginal_classes = prepare_data(dataset_name, architecture_type)
+        
+        x_train, y_train, x_test, y_test , original_classes = prepare_data(dataset_name, architecture_type)
+        model = build_model(model, input_shape = x_train.shape, n_classes = len(original_classes), architecture_type=architecture_type)
         checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}.hdf5")
         model_checkpoint_callback = ModelCheckpoint(
         filepath=checkpoint_filepath,
