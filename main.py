@@ -4,6 +4,7 @@ from keras.layers import InputLayer, Dense, SimpleRNN, Input
 from keras.models import Model, Sequential
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.models import Sequential
 
 model_mlp1 = model_mlp()
 
@@ -13,9 +14,24 @@ model_rnn1 = model_rnn_simple()
 
 
 
-model_list = [(model_mlp1, "mlp"), (model_mlp2, "mlp"), (model_rnn1, "rnn")]
+#model_list = [(model_mlp1, "mlp"), (model_mlp2, "mlp"), (model_rnn1, "rnn")]
 
-results = test_models(model_list=model_list,dataset_name="TwoPatterns")
+#results = test_models(model_list=model_list,dataset_name="TwoPatterns")
+
+model_list = [
+    (model_mlp1, "mlp", {'epochs': 10, 'early_stopping': {'monitor': 'val_loss', 'patience': 5}}),
+    (model_mlp2, "mlp", {'epochs': 15}),
+    (model_rnn1, "rnn", {'epochs': 8, 'early_stopping': {'monitor': 'val_loss', 'patience': 3}}),
+]
+
+global_params = {
+    'optimizer': 'adam',
+    'loss': 'categorical_crossentropy',
+    'metrics': ['accuracy'],
+    'batch_size': 32,
+}
+
+results = test_models(model_list=model_list, dataset_name="TwoPatterns", global_params=global_params)
 
 
 #### Plots

@@ -28,5 +28,6 @@ def build_model(layers, input_shape, n_classes, architecture_type):
     return Sequential(layers)
 
 
+
 if __name__ == "__main__":
     print("Hello World")
