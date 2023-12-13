@@ -17,21 +17,16 @@ model_rnn1 = model_rnn_simple()
 #model_list = [(model_mlp1, "mlp"), (model_mlp2, "mlp"), (model_rnn1, "rnn")]
 
 #results = test_models(model_list=model_list,dataset_name="TwoPatterns")
-
+## Mettre none dans la troisième valeur du tuple au lieu du dico si aucun paramètre va 
+## etre préciser pour le fit. 
 model_list = [
-    (model_mlp1, "mlp", {'epochs': 10, 'early_stopping': {'monitor': 'val_loss', 'patience': 5}}),
+    (model_mlp1, "mlp", {'epochs': 10}),
     (model_mlp2, "mlp", {'epochs': 15}),
-    (model_rnn1, "rnn", {'epochs': 8, 'early_stopping': {'monitor': 'val_loss', 'patience': 3}}),
+    (model_rnn1, "rnn", {'epochs': 8}),
 ]
 
-global_params = {
-    'optimizer': 'adam',
-    'loss': 'categorical_crossentropy',
-    'metrics': ['accuracy'],
-    'batch_size': 32,
-}
 
-results = test_models(model_list=model_list, dataset_name="TwoPatterns", global_params=global_params)
+results = test_models(model_list=model_list, dataset_name="TwoPatterns")
 
 
 #### Plots
