@@ -9,6 +9,7 @@ import numpy as np
 import os
 import json
 from model_builder import *
+import random
 
 def prepare_data(dataset_name, architecture_type):
 
@@ -48,16 +49,39 @@ def prepare_data(dataset_name, architecture_type):
     
     return x_train, y_train, x_test, y_test , label_encoder.classes_
 
+
+
+def creation_app_val(x_train, y_train, ratio=0.15):
+    
+    data_train = list(zip(x_train, y_train))
+    random.shuffle(data_train)
+    num_val = int(ratio * len(data_train))
+    num_app = len(data_train) - num_val
+
+   
+    data_app = data_train[:num_app]
+    data_val = data_train[num_app:num_app + num_val]
+    
+    
+    x_app, y_app = zip(*data_app)
+    x_val, y_val = zip(*data_val)
+    x_app = np.asarray(x_app)
+    y_app = np.asarray(y_app)
+    x_val = np.asarray(x_val)
+    y_val = np.asarray(y_val)
+    
+    
+    return x_app, y_app, x_val, y_val
+
 def test_models(model_list, dataset_name):
     results_path = os.path.join("resultats", dataset_name)
     os.makedirs(results_path, exist_ok=True)
     results = []
-
-    
-    
     for i, (model, architecture_type, model_params) in enumerate(model_list):
 
         x_train, y_train, x_test, y_test, original_classes = prepare_data(dataset_name, architecture_type)
+        x_app, y_app, x_val, y_val=creation_app_val(x_train, y_train)
+
         model = build_model(model, input_shape=x_train.shape, n_classes=len(original_classes), architecture_type=architecture_type)
         checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}.hdf5")
 
@@ -79,10 +103,10 @@ def test_models(model_list, dataset_name):
 
         # Entraînement du modèle
         if model_params == None:
-            history = model.fit(x=x_train, y=y_train, epochs=10, batch_size=32, validation_data=(x_test, y_test), 
+            history = model.fit(x=x_app, y=y_app, epochs=10, batch_size=32, validation_data=(x_val, y_val), 
                         callbacks=callbacks)
         else: 
-            history = model.fit(x=x_train, y=y_train, validation_data=(x_test, y_test), 
+            history = model.fit(x=x_app, y=y_app, validation_data=(x_val, y_val), 
                         callbacks=callbacks, **model_params)
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
             json.dump(history.history, json_file)
