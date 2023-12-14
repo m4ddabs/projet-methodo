@@ -108,9 +108,22 @@ def test_models(model_list, dataset_name):
         else: 
             history = model.fit(x=x_app, y=y_app, validation_data=(x_val, y_val), 
                         callbacks=callbacks, **model_params)
+        
+        ## Test du modèle: 
+        test_res = model.evaluate(x=x_test,y=y_test, return_dict=True)
+        ## Dico des résultats 
+        res_dict = {}
+        for key in history.history.keys():
+            res_dict[key] = history.history[key]
+        for key in test_res.keys():
+            res_dict["test_"+key] = test_res[key]
+        if "epochs" in model_params.keys():
+            res_dict["epochs"] = model_params["epochs"]
+        else:
+            res_dict["epochs"] = 10
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
-            json.dump(history.history, json_file)
-        results.append((model, architecture_type))
+            json.dump(res_dict, json_file)
+        results.append((model, architecture_type, history.history))
 
     
     return results

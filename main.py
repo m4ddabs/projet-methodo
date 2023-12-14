@@ -30,7 +30,7 @@ results = test_models(model_list=model_list, dataset_name="TwoPatterns")
 
 
 #### Plots
-results_hist = [tup[0].history.history for tup in results]
+results_hist = [tup[2] for tup in results]
 fig, axs = plt.subplots(2, 2, figsize=(10,10))
 axs[0, 0].plot(results_hist[0]["val_accuracy"])
 axs[0, 0].set_title('Modele sequentiel simple')
