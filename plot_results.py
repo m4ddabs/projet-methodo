@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import json
 import os
+import numpy as np
 
 # Get a list of all files in the directory
 pth = os.path.join("resultats","TwoPatterns")
@@ -8,26 +9,37 @@ all_files = os.listdir(pth)
 # Filter the list to include only JSON files
 json_files = [file for file in all_files if file.endswith('.json')]
 
+model_names = []
 results_hist =[]
 for file in json_files:
     with open(os.path.join(pth,file), 'r', encoding="utf-8") as fp:
         results_hist.append(json.load(fp))
+        model_names.append(os.path.splitext(file)[0])
 
 
-#### Plots
-fig, axs = plt.subplots(2, 2, figsize=(10,10))
-axs[0, 0].plot(results_hist[0]["val_accuracy"])
-axs[0, 0].set_title('Modele sequentiel simple')
-axs[0, 1].plot(results_hist[1]["val_accuracy"])
-axs[0, 1].set_title('Modele sequentiel avec 3 hidden layers')
-axs[1, 0].plot(results_hist[2]["val_accuracy"])
-axs[1, 0].set_title('Modele RNN simple')
 
 
-for ax in axs.flat:
-    ax.set(xlabel='Epochs', ylabel="Validation Accuracy")
 
-# Hide x labels and tick labels for top plots and y ticks for right plots.
-for ax in axs.flat:
-    ax.label_outer()
+
+fig, axs = plt.subplots(len(results_hist), 2, figsize=(10,4  * len(results_hist)))
+
+for i, result in enumerate(results_hist):
+    model_name = model_names[i]  # Nom du modèle correspondant à l'itération actuelle
+
+    # Graphique pour la précision (Accuracy)
+    axs[i, 0].plot(range(1, result['epochs'] + 1), result['accuracy'], label='Train Accuracy')
+    axs[i, 0].plot(range(1, result['epochs'] + 1), result['val_accuracy'], label='Validation Accuracy')
+    axs[i, 0].set_title(f'Model Accuracy - {model_name}')
+    axs[i, 0].set_xlabel('Epochs')
+    axs[i, 0].set_ylabel('Accuracy')
+    axs[i, 0].legend()
+
+    # Graphique pour la perte (Loss)
+    axs[i, 1].plot(range(1, result['epochs'] + 1), result['loss'], label='Train Loss')
+    axs[i, 1].plot(range(1, result['epochs'] + 1), result['val_loss'], label='Validation Loss')
+    axs[i, 1].set_title(f'Model Loss - {model_name}')
+    axs[i, 1].set_xlabel('Epochs')
+    axs[i, 1].set_ylabel('Loss')
+    axs[i, 1].legend()
+    
 plt.show()
