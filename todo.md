@@ -19,7 +19,7 @@
 * Séparer xtrain et ytrain en un jeu de validation et garder xtest et ytest pour mesurer l'accuracy avec evaluate. Fait
 * Faire en sorte que dans le json des performances on garde les valeurs du evaluate aussi et pas juste history. Fait
 * Faire un script de synthèse des résultats, les mettre sous forme d'un tableau automatiquement
-* Script bash pour lancer plusieurs test simultanément. Une fonction test module par test et par fichier ou une grosse fonction test module par fichier  ?
+* Script bash pour lancer plusieurs test simultanément. Une fonction test module par test et par fichier ou une grosse fonction test module par fichier ? 
 
 
 

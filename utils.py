@@ -120,7 +120,7 @@ def test_models(model_list, dataset_name):
         res_dict["epochs"] = len(res_dict['loss']) ## Ici on calcule le nombre d'epochs à partir du nombre de mesure dans la liste
                                                    ## loss au cas ou il y a eu un early stopping. 
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
-            json.dump(res_dict, json_file)
+            json.dump(res_dict, json_file, indent=2)
         results.append((model, architecture_type, history.history))
 
     
