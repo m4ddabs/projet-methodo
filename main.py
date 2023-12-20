@@ -1,32 +1,45 @@
 from utils import test_models
 from model_builder import *
-from keras.layers import InputLayer, Dense, SimpleRNN, Input
-from keras.models import Model, Sequential
 import numpy as np
 import matplotlib.pyplot as plt
-from keras.models import Sequential
+import sys
+import ast
 
-model_mlp1 = model_mlp()
+# model_mlp1 = model_mlp()
 
-model_mlp2 = model_mlp(n_hidden_layers=3, n_units=256)
+# model_mlp2 = model_mlp(n_hidden_layers=3, n_units=256)
 
-model_rnn1 = model_rnn_simple()
-
-
-
-#model_list = [(model_mlp1, "mlp"), (model_mlp2, "mlp"), (model_rnn1, "rnn")]
-
-#results = test_models(model_list=model_list,dataset_name="TwoPatterns")
-## Mettre none dans la troisième valeur du tuple au lieu du dico si aucun paramètre va 
-## etre préciser pour le fit. 
-model_list = [
-    (model_mlp1, "mlp", {'epochs': 10}),
-    (model_mlp2, "mlp", {'epochs': 15}),
-    (model_rnn1, "rnn", {'epochs': 8}),
-]
+# model_rnn1 = model_rnn_simple()
 
 
-results = test_models(model_list=model_list, dataset_name="TwoPatterns")
+# model_list = [
+#     (model_mlp1, "mlp", {'epochs': 10}),
+#     (model_mlp2, "mlp", {'epochs': 15}),
+#     (model_rnn1, "rnn", {'epochs': 8}),
+# ]
+
+
+
+# Mettre none dans la troisième valeur du tuple au lieu du dico si aucun paramètre va 
+# etre préciser pour le fit. 
+
+
+# Check if a list argument is provided
+if len(sys.argv) != 2:
+    print("Usage: python your_python_file.py <python_list>")
+    sys.exit(1)
+
+# # Parse the list from the command-line argument
+try:
+    model = ast.literal_eval(sys.argv[1])
+    print("Received list:", model)
+except (ValueError, SyntaxError) as e:
+    print("Error parsing list:", e)
+    sys.exit(1)
+
+model_list =[model]
+
+results = test_models(model_list=model_list, dataset_name="Libras")
 
 
 #### Plots

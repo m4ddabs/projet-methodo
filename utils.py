@@ -93,8 +93,17 @@ def test_models(model_list, dataset_name):
             mode='min',
             save_best_only=True)
         
-        early_stopping = EarlyStopping(monitor='val_loss', patience= 3, mode='min', verbose=1)
+        data_size = len(x_app)
 
+        if data_size < 1000:
+            patience = 5
+        elif 1000 <= data_size < 5000:
+            patience = 10
+        else:
+            patience = 15
+
+        early_stopping = EarlyStopping(monitor='val_loss', patience = patience, mode='min', verbose=1)
+        
         callbacks = [model_checkpoint_callback, early_stopping]
       
         print(f"model {i+1}")
@@ -113,12 +122,17 @@ def test_models(model_list, dataset_name):
         test_res = model.evaluate(x=x_test,y=y_test, return_dict=True)
         ## Dico des résultats 
         res_dict = {}
+        
         for key in history.history.keys():
             res_dict[key] = history.history[key]
         for key in test_res.keys():
             res_dict["test_"+key] = test_res[key]
-        res_dict["epochs"] = len(res_dict['loss']) ## Ici on calcule le nombre d'epochs à partir du nombre de mesure dans la liste
+        res_dict["epochs"] = res_dict['val_loss'].index(min(res_dict['val_loss'])) + 1  ## Ici on calcule le nombre d'epochs à partir du nombre de mesure dans la liste
                                                    ## loss au cas ou il y a eu un early stopping. 
+        for key in res_dict.keys():
+            if key not in ["test_accuracy", "test_loss", "epochs"]:
+                res_dict[key] = res_dict[key][0:res_dict["epochs"]] ## On fait ceci pour ne retenir que les élments qui nous intéressent dans les liste et qu'elles soient 
+                                                                            ## de la bonne longeur 
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
             json.dump(res_dict, json_file, indent=2)
         results.append((model, architecture_type, history.history))
