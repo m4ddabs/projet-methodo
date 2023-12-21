@@ -102,7 +102,7 @@ def test_models(model_list, dataset_name):
         else:
             patience = 15
 
-        early_stopping = EarlyStopping(monitor='val_loss', patience = patience, mode='min', verbose=1)
+        early_stopping = EarlyStopping(monitor='val_loss', patience = patience, mode='min', verbose=1, restore_best_weights=True)
         
         callbacks = [model_checkpoint_callback, early_stopping]
       

@@ -32,5 +32,6 @@ for dataset in datasets:
             results_dict['Test_Accuracy'].append(test_accuracy)
 
 df = pd.DataFrame(results_dict)
+df_pivoted = df.pivot(index='Data', columns ='Model', values="Test_Accuracy")
 
-print(df.head())
+print(df_pivoted.head())
