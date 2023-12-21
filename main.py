@@ -25,38 +25,24 @@ import ast
 
 
 # Check if a list argument is provided
-if len(sys.argv) != 2:
-    print("Usage: python your_python_file.py <python_list>")
-    sys.exit(1)
+if len(sys.argv) > 2:
+    # Extract the function name and arguments
+    function_name = sys.argv[1]
+    args = sys.argv[2]
 
-# # Parse the list from the command-line argument
-try:
-    model = ast.literal_eval(sys.argv[1])
-    print("Received list:", model)
-except (ValueError, SyntaxError) as e:
-    print("Error parsing list:", e)
-    sys.exit(1)
+    # Check if the function exists
+    if function_name in globals() and callable(globals()[function_name]):
+        # Call the specified function with the provided arguments
+        params_model,model_type,params_fit = ast.literal_eval(args)
+        if params_model is not None:
+            model = (globals()[function_name](**params_model), model_type, params_fit)
+        else:
+            model = (globals()[function_name](), model_type, params_fit)
+    else:
+        print(f"Function '{function_name}' not found or not callable.")
+else:
+    print("Insufficient arguments.")
 
 model_list =[model]
 
 results = test_models(model_list=model_list, dataset_name="Libras")
-
-
-#### Plots
-results_hist = [tup[2] for tup in results]
-fig, axs = plt.subplots(2, 2, figsize=(10,10))
-axs[0, 0].plot(results_hist[0]["val_accuracy"])
-axs[0, 0].set_title('Modele sequentiel simple')
-axs[0, 1].plot(results_hist[1]["val_accuracy"])
-axs[0, 1].set_title('Modele sequentiel avec 3 hidden layers')
-axs[1, 0].plot(results_hist[2]["val_accuracy"])
-axs[1, 0].set_title('Modele RNN simple')
-
-
-for ax in axs.flat:
-    ax.set(xlabel='Epochs', ylabel="Validation Accuracy")
-
-# Hide x labels and tick labels for top plots and y ticks for right plots.
-for ax in axs.flat:
-    ax.label_outer()
-plt.show()
