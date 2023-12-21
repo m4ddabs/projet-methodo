@@ -34,12 +34,21 @@ for i, result in enumerate(results_hist):
     axs[i, 0].set_ylabel('Accuracy')
     axs[i, 0].legend()
 
+    
+    min_val_loss_index = result['val_loss'].index(min(result['val_loss']))+1
+    axs[i, 0].axvline(x = min_val_loss_index, color='green', linestyle='--', label='Min Loss Epoch')
+    axs[i, 0].legend()
+
     # Graphique pour la perte (Loss)
     axs[i, 1].plot(range(1, result['epochs'] + 1), result['loss'], label='Train Loss')
     axs[i, 1].plot(range(1, result['epochs'] + 1), result['val_loss'], label='Validation Loss')
     axs[i, 1].set_title(f'Model Loss - {model_name}')
     axs[i, 1].set_xlabel('Epochs')
     axs[i, 1].set_ylabel('Loss')
+    axs[i, 1].legend()
+    
+
+    axs[i, 1].axvline(x = min_val_loss_index, color='green', linestyle='--', label='Min Loss Epoch')
     axs[i, 1].legend()
     
 plt.show()
