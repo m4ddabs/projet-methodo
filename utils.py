@@ -135,7 +135,7 @@ def test_models(model_list, dataset_name):
                                                                             ## de la bonne longeur 
         with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
             json.dump(res_dict, json_file, indent=2)
-        results.append((model, architecture_type, history.history))
+        results.append((None, architecture_type, history.history))
 
     
     return results

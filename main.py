@@ -5,20 +5,11 @@ import matplotlib.pyplot as plt
 import sys
 import ast
 
-# model_mlp1 = model_mlp()
 
-# model_mlp2 = model_mlp(n_hidden_layers=3, n_units=256)
-
-# model_rnn1 = model_rnn_simple()
-
-
-# model_list = [
-#     (model_mlp1, "mlp", {'epochs': 10}),
-#     (model_mlp2, "mlp", {'epochs': 15}),
-#     (model_rnn1, "rnn", {'epochs': 8}),
-# ]
-
-
+with open("datasets.txt", 'r', encoding='utf-8') as fp:
+    datasets = []
+    for line  in fp.readlines():
+        datasets.append(line.strip('\n'))
 
 # Mettre none dans la troisième valeur du tuple au lieu du dico si aucun paramètre va 
 # etre préciser pour le fit. 
@@ -45,4 +36,5 @@ else:
 
 model_list =[model]
 
-results = test_models(model_list=model_list, dataset_name="Libras")
+for dataset in datasets:
+    test_models(model_list=model_list, dataset_name=dataset)
