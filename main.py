@@ -19,16 +19,17 @@ with open("datasets.txt", 'r', encoding='utf-8') as fp:
 if len(sys.argv) > 2:
     # Extract the function name and arguments
     function_name = sys.argv[1]
-    args = sys.argv[2]
+    args = sys.argv[2] 
+    model_name = sys.argv[3]
 
     # Check if the function exists
     if function_name in globals() and callable(globals()[function_name]):
         # Call the specified function with the provided arguments
         params_model,model_type,params_fit = ast.literal_eval(args)
         if params_model is not None:
-            model = (globals()[function_name](**params_model), model_type, params_fit)
+            model = (globals()[function_name](**params_model), model_type, params_fit, model_name)
         else:
-            model = (globals()[function_name](), model_type, params_fit)
+            model = (globals()[function_name](), model_type, params_fit, model_name)
     else:
         print(f"Function '{function_name}' not found or not callable.")
 else:
@@ -36,5 +37,18 @@ else:
 
 model_list =[model]
 
+## A l'interieur de la boucle sur les données nous devons redéfinir le modèle à chaque itération
+## Car sinon le modèle entrainé est sauvegardé en mémoire est il est utilisé lors de la prochaine itération.  
+
 for dataset in datasets:
+    if function_name in globals() and callable(globals()[function_name]):
+        # Call the specified function with the provided arguments
+        params_model,model_type,params_fit = ast.literal_eval(args)
+        if params_model is not None:
+            model = (globals()[function_name](**params_model), model_type, params_fit, model_name)
+        else:
+            model = (globals()[function_name](), model_type, params_fit, model_name)
+    else:
+        print(f"Function '{function_name}' not found or not callable.")
+    model_list =[model]
     test_models(model_list=model_list, dataset_name=dataset)

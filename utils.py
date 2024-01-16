@@ -77,13 +77,13 @@ def test_models(model_list, dataset_name):
     results_path = os.path.join("resultats", dataset_name)
     os.makedirs(results_path, exist_ok=True)
     results = []
-    for i, (model, architecture_type, model_params) in enumerate(model_list):
+    for i, (model, architecture_type, model_params, model_name) in enumerate(model_list):
 
         x_train, y_train, x_test, y_test, original_classes = prepare_data(dataset_name, architecture_type)
         x_app, y_app, x_val, y_val=creation_app_val(x_train, y_train)
 
         model = build_model(model, input_shape=x_train.shape, n_classes=len(original_classes), architecture_type=architecture_type)
-        checkpoint_filepath = os.path.join(results_path, f"model_{architecture_type}_{i+1}.hdf5")
+        checkpoint_filepath = os.path.join(results_path, f"{model_name}.hdf5")
 
         ## Callbacks
         model_checkpoint_callback = ModelCheckpoint(
@@ -133,7 +133,7 @@ def test_models(model_list, dataset_name):
             if key not in ["test_accuracy", "test_loss", "epochs"]:
                 res_dict[key] = res_dict[key][0:res_dict["epochs"]] ## On fait ceci pour ne retenir que les élments qui nous intéressent dans les liste et qu'elles soient 
                                                                             ## de la bonne longeur 
-        with open(os.path.join(results_path, f"model_{architecture_type}_{i+1}.json"), 'w') as json_file:
+        with open(os.path.join(results_path, f"{model_name}.json"), 'w') as json_file:
             json.dump(res_dict, json_file, indent=2)
         results.append((None, architecture_type, history.history))
 
