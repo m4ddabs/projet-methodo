@@ -1,6 +1,18 @@
 import keras_core as keras
 from keras.models import Sequential
-from keras.layers import InputLayer, Input, Dense, Conv1D, MaxPool1D, Flatten, Dropout, SimpleRNN
+from keras.layers import InputLayer, Input, Dense, Conv1D, MaxPool1D, Flatten, Dropout, SimpleRNN, Bidirectional, LSTM
+
+
+
+##Architecture inspirée de https://www.omdena.com/blog/time-series-classification-model-tutorial
+## Nous avons laissé de coté la partie de réseaux qui traite les variables catégoriques. 
+def model_lstm_bi():
+    layers = [
+        Bidirectional(LSTM(units=20, activation="relu", return_sequences=True)),
+        Flatten(),
+        Dense(units=100, activation="relu"),
+    ]
+    return layers
 
 def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 5):
     layers = [
@@ -9,9 +21,9 @@ def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 
         Conv1D(filters=16, kernel_size=kernel_size, activation='relu', padding=padding),
         MaxPool1D(pool_size=pool_size, padding=padding),
         Flatten(),
-        Dense(units=256, activation='softmax'),
-        Dense(units=120, activation='softmax'),
-        Dense(units=84, activation='softmax')
+        Dense(units=256, activation='relu'),
+        Dense(units=120, activation='relu'),
+        Dense(units=84, activation='relu')
     ]
     return layers
 
