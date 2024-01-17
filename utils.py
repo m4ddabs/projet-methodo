@@ -96,11 +96,11 @@ def test_models(model_list, dataset_name):
         data_size = len(x_app)
 
         if data_size < 1000:
-            patience = 5
-        elif 1000 <= data_size < 5000:
             patience = 10
-        else:
+        elif 1000 <= data_size < 5000:
             patience = 15
+        else:
+            patience = 20
 
         early_stopping = EarlyStopping(monitor='val_loss', patience = patience, mode='min', verbose=1, restore_best_weights=True)
         
