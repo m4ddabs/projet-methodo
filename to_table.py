@@ -35,3 +35,5 @@ df = pd.DataFrame(results_dict)
 df_pivoted = df.pivot(index='Data', columns ='Model', values="Test_Accuracy")
 
 print(df_pivoted.head())
+
+df_pivoted.to_csv('R_projet/results.csv', index=True)

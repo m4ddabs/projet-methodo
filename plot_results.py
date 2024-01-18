@@ -19,8 +19,6 @@ for file in json_files:
 
 
 
-
-
 fig, axs = plt.subplots(len(results_hist), 2, figsize=(10,4  * len(results_hist)))
 
 for i, result in enumerate(results_hist):

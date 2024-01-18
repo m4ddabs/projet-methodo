@@ -1,0 +1,92 @@
+---
+title: "Untitled"
+output: html_document
+date: "2024-01-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+data<- read.csv("results.csv")
+data
+```
+```{r}
+summary(data)
+```
+
+
+```{r}
+df_long <- data %>%
+  gather(key = "Model", value = "Test_Accuracy", -Data)
+df_long 
+```
+
+
+```{r}
+best_performances<- df_long %>%
+  group_by(Model) %>%
+  slice(which.max(Test_Accuracy))
+best_performances
+```
+```{r}
+bof_performances<- df_long %>%
+  group_by(Model) %>%
+  slice(which.min(Test_Accuracy))
+bof_performances
+```
+
+
+```{r}
+
+
+# Transformer le DataFrame pour avoir une colonne pour le modèle et une colonne pour les valeurs de test accuracy
+df_long <- data %>%
+  gather(key = "Model", value = "Test_Accuracy", -Data)
+
+# Identifier le meilleur modèle pour chaque ensemble de données
+best_models <- df_long %>%
+  group_by(Data) %>%
+  slice(which.max(Test_Accuracy))
+
+# Tracer un diagramme en barres montrant le meilleur modèle pour chaque ensemble de données
+ggplot(best_models, aes(x = Data, y = Test_Accuracy, fill = Model)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  labs(title = "Best Model for Each Dataset", y = "Test Accuracy") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top", legend.title = element_blank()) +
+  scale_fill_brewer(palette = "Set3")
+
+```
+# Pour chaque Dataset on peut visulaiser le meilleur modele 
+```{r}
+# Sélectionner les quatre premiers ensembles de données
+selected_datasets <- unique(data$Data)[1:4]
+
+# Filtrer les données pour inclure uniquement ces ensembles de données
+df_top4 <- data[data$Data %in% selected_datasets, ]
+
+# Transformer le DataFrame pour avoir une colonne pour le modèle et une colonne pour les valeurs de test accuracy
+df_long <- df_top4 %>%
+  gather(key = "Model", value = "Test_Accuracy", -Data)
+
+# Tracer un diagramme à barres empilées montrant les pourcentages d'accuracy pour chaque modèle
+ggplot(df_long, aes(x = Data, y = Test_Accuracy, fill = Model, label = sprintf("%.3f", Test_Accuracy))) +
+  geom_bar(stat = "identity") +
+  geom_text(position = position_stack(vjust = 0.5), size = 3) +  # Ajouter des étiquettes
+  labs(title = "Pourcentages d'accuracy pour chaque modèle dans les 4 premiers ensembles de données", y = "Pourcentage d'accuracy") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top", legend.title = element_blank()) +
+  scale_fill_brewer(palette = "Set3") +
+  facet_wrap(~Model, scales = "free_y", ncol = 1)
+
+
+```
+
+

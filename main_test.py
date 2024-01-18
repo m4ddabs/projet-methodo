@@ -19,6 +19,8 @@ model_rnn1 = model_rnn_simple()
 model_cnn1 = model_cnn_1()
 model_lstm1 = model_lstm()
 
+model_mlp4 = model_mlp_4l()
+
 # model_list = [
 #     (model_mlp1, "mlp", {'epochs': 10}),
 #     (model_mlp2, "mlp", {'epochs': 15}),

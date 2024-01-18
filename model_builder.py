@@ -1,6 +1,6 @@
 import keras_core as keras
 from keras.models import Sequential
-from keras.layers import InputLayer, Input, Dense, Conv1D, MaxPool1D, Flatten, Dropout, SimpleRNN, Bidirectional, LSTM
+from keras.layers import InputLayer, Input, Dense, Conv1D, MaxPool1D, Flatten, Dropout, SimpleRNN, Bidirectional, LSTM, GRU, BatchNormalization
 
 
 
@@ -13,6 +13,7 @@ def model_lstm_bi():
         Dense(units=100, activation="relu")
     ]
     return layers
+
 
 def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 5):
     layers = [
@@ -27,9 +28,24 @@ def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 
     ]
     return layers
 
+
 def model_rnn_simple(n_units=64):
     layers = [SimpleRNN(n_units, return_sequences=False)]
     return layers
+
+def model_rnn_gru_avec_bn(n_units=64):
+    layers = [
+        Bidirectional(GRU(n_units, return_sequences=False)),
+        BatchNormalization(),
+        Dense(units=256, activation='relu'),
+        BatchNormalization(),
+        Dense(units=120, activation='relu'),
+        BatchNormalization(),
+        Dense(units=84, activation='relu')
+    ]
+    return layers
+
+
 
 ## Fonction model_mlp: 
 ## Definis un modele mlp pour la classification de series temporelles. 
@@ -40,6 +56,20 @@ def model_mlp(n_hidden_layers=0, n_units=64, activation ="relu"):
             layers.append(Dense(units=n_units, activation=activation))
     return layers
 
+def model_mlp_4l():
+        layers = [
+        Dense(500, activation='relu'),
+        Dropout(0.1),
+        Dense(500, activation='relu'),
+        Dropout(0.2),
+        Dense(500, activation='relu'),
+        Dropout(0.2),
+        Dense(500, activation='relu'),
+        Dropout(0.3)
+        ]
+        
+        
+        return layers
 
 ## This function only builds sequential models 
 def build_model(layers, input_shape, n_classes, architecture_type):
