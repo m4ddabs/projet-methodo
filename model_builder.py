@@ -10,7 +10,7 @@ def model_lstm_bi():
     layers = [
         Bidirectional(LSTM(units=20, activation="relu", return_sequences=True)),
         Flatten(),
-        Dense(units=100, activation="relu"),
+        Dense(units=100, activation="relu")
     ]
     return layers
 
