@@ -1,0 +1,6 @@
+Notes resutats: 
+
+MOdele mlp3l electronicDevices:
+- Rajouter neuronnes
+- Rajouter dropout car surapprentissage
+- Augmenter nombre d'epochs ?
