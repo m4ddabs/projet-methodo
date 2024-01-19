@@ -17,9 +17,11 @@ model_mlp2 = model_mlp(n_hidden_layers=3, n_units=256)
 model_rnn1 = model_rnn_simple()
 
 model_cnn1 = model_cnn_1()
-model_lstm1 = model_lstm()
+model_lstm1 = model_lstm_bi()
 
 model_mlp4 = model_mlp_4l()
+
+model_transformer1 = model_transformer()
 
 # model_list = [
 #     (model_mlp1, "mlp", {'epochs': 10}),
@@ -29,9 +31,9 @@ model_mlp4 = model_mlp_4l()
 
 
 
-# for dataset in datasets:
-#     model_lstm1 = model_lstm()
-#     model_list =[(model_lstm1, "rnn", {'epochs': 10}, "model_2lstm_2dense")]
-#     test_models(model_list=model_list, dataset_name=dataset)
+for dataset in datasets:
+    model_transformer1 = model_transformer()
+    model_list =[(model_transformer1, "transformer", {'epochs': 100}, "model_transformer")]
+    test_models(model_list=model_list, dataset_name=dataset)
 
-test_models(model_list=[(model_lstm1, "rnn", {'epochs': 10}, "model_2lstm_2dense")], dataset_name='Adiac')
+# test_models(model_list=[(model_transformer1, "transformer", {'epochs': 100}, "model_transformer")], dataset_name='Adiac')
