@@ -53,8 +53,7 @@ def model_lstm_bi_attention():
     layers = [
         Bidirectional(LSTM(units=128, activation="relu", return_sequences=True, name="lstm1")),
         attention_custom(),
-        Dense(units=100, activation="relu", name="dense1"),
-        Dropout(0.3,name="drop1")
+        Dense(units=100, activation="relu", name="dense1")
     ]
 
     return layers
