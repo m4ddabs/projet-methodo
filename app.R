@@ -2,7 +2,9 @@ library(shiny)
 library(tidyverse)
 library(rjson)
 
-model_list <- c("model_mlp_simple", 'model_mlp_3L', "model_rnn_simple", "model_cnn_simple", "model_mlp_4L", "model_rnn_gru_3L", "model_lstmbi_dense")
+model_list <- c("model_mlp_simple", 'model_mlp_3L', "model_rnn_simple", "model_cnn_simple", 
+                "model_mlp_4L", "model_rnn_gru_3L", "model_lstmbi_dense", "model_mlp_3L_dropout",
+                "model_cnn_simple_dropout")
 datasets <- read.table("datasets.txt")
 datasets <- datasets$V1
 dataset_info<-read_csv("infos_series_temporelles.csv")

@@ -2,6 +2,7 @@ import keras
 from keras import layers
 from keras.models import Sequential
 from keras.layers import InputLayer, Input, Dense, Conv1D, MaxPool1D, Flatten, Dropout, SimpleRNN, Bidirectional, LSTM, GRU, BatchNormalization
+from keras import backend as K
 
 
 ##https://keras.io/examples/timeseries/timeseries_classification_transformer/
@@ -18,6 +19,48 @@ def model_lstm_bi():
     ]
     return layers
 
+class attention(keras.layers.Layer):     
+    def __init__(self):    
+        # Nothing special to be done here
+        super(attention, self).__init__()
+        
+    def build(self, input_shape):
+        # Define the shape of the weights and bias in this layer
+        # As we discussed the layer has just 1 lonely neuron
+        # We discussed the shapes of the weights and bias earlier
+        self.inp_dim = input_shape[-1] 
+        self.seq_length = input_shape[-2]  #timesteps per time series
+        num_units = 1    
+        self.W = self.add_weight((self.inp_dim,num_units),
+                                 initializer='normal')
+        self.b = self.add_weight((self.seq_length,num_units),
+                                 initializer='zero')
+        super(attention, self).build(input_shape)
+        
+    def call(self, x):
+        # x is the input tensor of inp_dim dimensions        # Below is the main processing done during training
+        # K is the Keras Backend import
+        e = K.tanh(K.dot(x,self.w)+self.b)
+        a = K.softmax(e, axis=1)
+        output = x*a
+        
+        # return the outputs. 'a' is the set of seq_length attention weights
+        # the second variable is the 'attention adjusted o/p state'
+        return a, K.sum(output, axis=1)
+        
+    
+
+
+def model_lstm_bi_attention():
+    layers = [
+        Bidirectional(LSTM(units=128, activation="relu", return_sequences=True)),
+        attention(),
+        Dense(units=100, activation="relu"),
+        Dropout(0.3)
+    ]
+
+    return layers
+
 
 def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 5):
     layers = [
@@ -29,6 +72,23 @@ def model_cnn_1(padding = "valid", strides = None, pool_size = 2, kernel_size = 
         Dense(units=256, activation='relu'),
         Dense(units=120, activation='relu'),
         Dense(units=84, activation='relu')
+    ]
+    return layers
+
+def model_cnn2_dropout(padding = "valid", strides = None, pool_size = 2, kernel_size = 5, dropout_val=0.3):
+    layers = [
+        Conv1D(filters=6, kernel_size=kernel_size, activation='relu', padding=padding),
+        MaxPool1D(pool_size=pool_size, padding='valid'),
+        Conv1D(filters=16, kernel_size=kernel_size, activation='relu', padding=padding),
+        MaxPool1D(pool_size=pool_size, padding=padding),
+        Flatten(),
+        Dropout(dropout_val),
+        Dense(units=256, activation='relu'),
+        Dropout(dropout_val),
+        Dense(units=120, activation='relu'),
+        Dropout(dropout_val),
+        Dense(units=84, activation='relu'),
+        Dropout(dropout_val)
     ]
     return layers
 
@@ -53,11 +113,13 @@ def model_rnn_gru_avec_bn(n_units=64):
 
 ## Fonction model_mlp: 
 ## Definis un modele mlp pour la classification de series temporelles. 
-def model_mlp(n_hidden_layers=0, n_units=64, activation ="relu"):
+def model_mlp(n_hidden_layers=0, n_units=64, activation ="relu", dropout = False, dropout_val = 0.3):
     layers = []
     if n_hidden_layers > 0:
         for i in range(n_hidden_layers):
             layers.append(Dense(units=n_units, activation=activation))
+            if dropout == True:
+                layers.append(Dropout(dropout_val))
     return layers
 
 def model_mlp_4l():
@@ -117,7 +179,7 @@ def build_model(model, input_shape, n_classes, architecture_type):
         return build_model_transformer(shape, n_classes, head_size, num_heads, ff_dim, num_transformer_blocks, mlp_units, dropout, mlp_dropout)
     model.insert(0,InputLayer(input_shape=shape))
     model.append(Dense(units=n_classes, activation="softmax"))
-    return Sequential(layers)
+    return Sequential(model)
 
 
 
