@@ -20,13 +20,20 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-     selectInput("dataset",
-                  "Dataset:",
-                  datasets),
+     checkboxInput("transformer_toggle", "Show transformer model(If you enable this you
+                   will not be able to see all datasets since the transformer model
+                   could not be trained on all of them)", value = FALSE, width = NULL),
      
-     selectInput("model",
-                 "Model:",
-                 model_list),
+     uiOutput("data_model_select"),
+     
+     # selectInput("dataset",
+     #              "Dataset:",
+     #              datasets),
+     # 
+     # 
+     # selectInput("model",
+     #             "Model:",
+     #             model_list),
      
      radioButtons("rb", "Choose one:",
                   choiceNames = list(
@@ -75,6 +82,30 @@ server <- function(input, output) {
         scale_color_manual(values = c("loss" = "blue", "val_loss" = "red"), labels = c("loss" = "training loss", "val_loss" = "validation loss")) +
         coord_cartesian(ylim = c(min(tb$loss, tb$val_loss), tb$loss[1])) +
         theme_minimal()
+    }
+  })
+  
+  output$data_model_select <- renderUI({
+    if(input$transformer_toggle == F){
+      tagList(
+        selectInput("dataset",
+                    "Dataset:",
+                    datasets),
+        selectInput("model",
+                  "Model:",
+                  model_list))
+    }else{
+      model_list_transformer <- append(model_list, "model_transformer")
+      datasets_transformer <- datasets[!datasets == 'HandOutlines']
+      datasets_transformer <- datasets_transformer[1:match("InlineSkate", datasets_transformer) -1] 
+      tagList(
+        selectInput("dataset",
+                    "Dataset:",
+                    datasets_transformer),
+        selectInput("model",
+                    "Model:",
+                    model_list_transformer))
+      
     }
   })
   
