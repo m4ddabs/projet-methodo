@@ -23,6 +23,8 @@ model_mlp4 = model_mlp_4l()
 
 model_transformer1 = model_transformer()
 
+model_lstmbi_attent = model_lstm_bi_attention()
+
 # model_list = [
 #     (model_mlp1, "mlp", {'epochs': 10}),
 #     (model_mlp2, "mlp", {'epochs': 15}),
@@ -32,8 +34,8 @@ model_transformer1 = model_transformer()
 
 
 for dataset in datasets:
-    model_transformer1 = model_transformer()
-    model_list =[(model_transformer1, "transformer", {'epochs': 100}, "model_transformer")]
+    model_lstmbi_attent = model_lstm_bi_attention()
+    model_list =[(model_lstmbi_attent, "rnn-att", {'epochs': 200}, "model_lstmbi_attention")]
     test_models(model_list=model_list, dataset_name=dataset)
 
 # test_models(model_list=[(model_transformer1, "transformer", {'epochs': 100}, "model_transformer")], dataset_name='Adiac')

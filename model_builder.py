@@ -19,44 +19,42 @@ def model_lstm_bi():
     ]
     return layers
 
-class attention(keras.layers.Layer):     
-    def __init__(self):    
+class attention_custom(keras.layers.Layer):
+    def __init__(self):
         # Nothing special to be done here
-        super(attention, self).__init__()
-        
+        super(attention_custom, self).__init__()
+
     def build(self, input_shape):
         # Define the shape of the weights and bias in this layer
         # As we discussed the layer has just 1 lonely neuron
         # We discussed the shapes of the weights and bias earlier
-        self.inp_dim = input_shape[-1] 
+        self.inp_dim = input_shape[-1]
         self.seq_length = input_shape[-2]  #timesteps per time series
-        num_units = 1    
-        self.W = self.add_weight((self.inp_dim,num_units),
-                                 initializer='normal')
-        self.b = self.add_weight((self.seq_length,num_units),
-                                 initializer='zero')
-        super(attention, self).build(input_shape)
-        
+        num_units = 1
+        self.w = self.add_weight(shape=(self.inp_dim,num_units),initializer='normal', name="weight_1")
+        self.b = self.add_weight(shape=(self.seq_length,num_units),initializer='zero', name='bias_1')
+        super(attention_custom, self).build(input_shape)
+
     def call(self, x):
         # x is the input tensor of inp_dim dimensions        # Below is the main processing done during training
         # K is the Keras Backend import
         e = K.tanh(K.dot(x,self.w)+self.b)
         a = K.softmax(e, axis=1)
         output = x*a
-        
+
         # return the outputs. 'a' is the set of seq_length attention weights
         # the second variable is the 'attention adjusted o/p state'
         return a, K.sum(output, axis=1)
-        
-    
+
+
 
 
 def model_lstm_bi_attention():
     layers = [
-        Bidirectional(LSTM(units=128, activation="relu", return_sequences=True)),
-        attention(),
-        Dense(units=100, activation="relu"),
-        Dropout(0.3)
+        Bidirectional(LSTM(units=128, activation="relu", return_sequences=True, name="lstm1")),
+        attention_custom(),
+        Dense(units=100, activation="relu", name="dense1"),
+        Dropout(0.3,name="drop1")
     ]
 
     return layers
@@ -167,19 +165,31 @@ def build_model_transformer(input_shape,n_classes,head_size,num_heads,ff_dim,num
     outputs = layers.Dense(n_classes, activation="softmax")(x)
     return keras.Model(inputs, outputs)
 
-## This function only builds sequential models 
+## This function builds models 
 def build_model(model, input_shape, n_classes, architecture_type):
     if architecture_type == 'mlp':
         shape = (input_shape[1], ) # Nous laissons de cote le batch size
-    if architecture_type in ['rnn', 'cnn']:
+    if architecture_type in ['rnn', 'cnn', 'rnn-att']:
         shape = (input_shape[1], input_shape[2]) # Nous laissons de cote le batch size
+        if architecture_type == 'rnn-att':
+          input = Input(shape=shape)
+          x = model[0](input)
+          for i in range(1,len(model)):
+            if i == 1:
+              a, x = model[i](x)        ## a = poids d'attention, regarder la function call de la class attention custom pour comprendre
+            else:
+              x = model[i](x)
+          output = Dense(units=n_classes, activation="softmax")(x)
+          return keras.Model(inputs=input, outputs=output)          
+
     if architecture_type == "transformer":
         shape = (input_shape[1], input_shape[2])
         head_size, num_heads, ff_dim, num_transformer_blocks, mlp_units, dropout , mlp_dropout = model
         return build_model_transformer(shape, n_classes, head_size, num_heads, ff_dim, num_transformer_blocks, mlp_units, dropout, mlp_dropout)
     model.insert(0,InputLayer(input_shape=shape))
     model.append(Dense(units=n_classes, activation="softmax"))
-    return Sequential(model)
+    return Sequential(layers)
+
 
 
 
