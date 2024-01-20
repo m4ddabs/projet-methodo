@@ -69,7 +69,7 @@ server <- function(input, output) {
       ggplot(tb) + aes(x=1:tb$epochs[1]) +
         geom_line(aes(y=loss, color="loss") ,size=1) +
         geom_line(aes(y=val_loss, color ="val_loss"), size = 1) + 
-        labs(title = "Valeur de la fonction de la fonction de cout du modèle",
+        labs(title = "Valeur de la fonction de cout du modèle",
              x = "Epochs",
              y = "Loss") +
         scale_color_manual(values = c("loss" = "blue", "val_loss" = "red"), labels = c("loss" = "training loss", "val_loss" = "validation loss")) +
